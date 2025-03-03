@@ -1,29 +1,75 @@
-# Create T3 App
+# 💤 Pulse – AI-Powered Catch-Up Dashboard  
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+**Pulse** is an AI-driven personal dashboard that **summarizes your day as soon as you wake up**. It fetches your tasks, unread emails, and important WhatsApp messages, then organizes them into a clean, mobile-friendly dashboard.  
 
-## What's next? How do I make an app with this?
+## 🚀 Features  
+✅ **Wake-Up Trigger** – Runs automatically when you **unlock your iPhone**.  
+✅ **Task Sync** – Fetches today’s tasks from **Motion (via Google Calendar API)**.  
+✅ **Email Summarisation** – Uses **AI (GPT-4-turbo or self-hosted Mistral)** to summarise unread emails.  
+✅ **WhatsApp Message Insights** – Scrapes **WhatsApp Web** to summarise your latest messages.  
+✅ **News & RSS Feeds** *(Optional)* – Displays top news articles relevant to you.  
+✅ **Fully Free to Run** – Uses **Vercel + Supabase + Free APIs** for hosting and data storage.  
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 📸 Screenshot (UI Preview)  
+🚀 *Coming Soon*  
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## 🔧 Tech Stack  
+- **Frontend:** Next.js (t3 Stack) + Tailwind CSS
+- **Backend:** tRPC (Next.js API) + Drizzle ORM
+- **Database:** Supabase (PostgreSQL free-tier)
+- **AI:** OpenAI GPT-4-turbo (Azure free-tier) or Self-Hosted Mistral
+- **Automation:** iOS Shortcuts → Webhook to trigger updates
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+---
 
-## Learn More
+## 📥 Installation & Setup  
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### **1️⃣ Clone the Repository**  
+```sh
+git clone https://github.com/abdullah-sah/pulse.git  
+cd pulse
+```
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### **2️⃣ Install Dependencies**
+```sh
+npm install
+```
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### **3️⃣ Setup Environment Variables** 
+Create a `.env.` file in the root directory and add the following environment variables:
+```ini
+# Supabase (Database)
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-## How do I deploy this?
+# Google API (for Gmail & Calendar)
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+# AI Summarisation (Optional)
+OPENAI_API_KEY=your_openai_key  # Use this if you're relying on OpenAI for email & WhatsApp summarisation
+
+# Deployment (if using Vercel)
+NEXT_PUBLIC_SITE_URL=https://your-vercel-app.vercel.app
+```
+
+💡 **Note**: You'll get these keys from:
+- **Supabase Console** (Database settings -> API Keys)
+- **Google Cloud Console** (OAuth Credentials for Google API)
+- **OpenAI Dashboard** (if using OpenAI's API)
+
+### **4️⃣ Setup Database (Drizzle ORM with Supabase)**
+Since we're using **Drizzle ORM** with Supabase, initialise the database:
+```sh
+npx drizzle-kit generate:pg		# Generate migrations
+npx drizzle-kit push:pg			# Apply migrations to Supabase
+```
+This will create the necessary tables in your **Supabase PostgreSQL database**
+
+### **5️⃣ Run the Development Server**
+After setting up the database, start the Next.js app:
+```sh
+npm run dev
+```
+
+📌 The app will be at *http://localhost:3000* 🚀
