@@ -1,24 +1,36 @@
 'use client';
 
-import Hero from '@/components/hero';
-import ConnectSupabaseSteps from '@/components/tutorial/connect-supabase-steps';
-import SignUpUserSteps from '@/components/tutorial/sign-up-user-steps';
-import { hasEnvVars } from '@/utils/supabase/check-env-vars';
-import { fetchPulseLogs, writePulseLog } from '@/app/actions';
+import { Button } from '@/components/ui/button';
+import { createClient, getRedirectUrl } from '@/utils/supabase/client';
 
 export default function Home() {
+	const supabase = createClient();
+
+	console.log('the redirect url is', getRedirectUrl());
+
+	const handleSignIn = async () => {
+		try {
+			const { data, error } = await supabase.auth.signInWithOAuth({
+				provider: 'google',
+				options: {
+					redirectTo: getRedirectUrl(),
+					scopes: 'email profile', // Specify required scopes
+				},
+			});
+			if (error) throw error;
+			window.location.href = data.url;
+		} catch (error) {
+			// Proper error handling with user feedback
+			console.error('Authentication error:', error);
+			// Show user-friendly error message
+		}
+	};
+
 	return (
 		<>
-			<Hero />
-			<main className='flex-1 flex flex-col gap-6 px-4'>
-				<h2
-					className='font-medium text-xl mb-4'
-					onClick={() => writePulseLog('secondtest')}
-				>
-					Next steps
-				</h2>
-				{hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-			</main>
+			<section className='flex-1 flex flex-col gap-6 px-4'>
+				<Button onClick={handleSignIn}>just some test text</Button>
+			</section>
 		</>
 	);
 }

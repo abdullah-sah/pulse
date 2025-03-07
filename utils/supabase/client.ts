@@ -5,3 +5,10 @@ export const createClient = () =>
 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 	);
+
+export const getRedirectUrl = () => {
+	if (process.env.NEXT_PUBLIC_NODE_ENV === 'development') {
+		return 'http://localhost:3000/auth/callback';
+	}
+	return 'https://pulse-seven-kappa.vercel.app/auth/callback';
+};
