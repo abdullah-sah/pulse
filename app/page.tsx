@@ -14,7 +14,8 @@ export default function Home() {
 				provider: 'google',
 				options: {
 					redirectTo: getRedirectUrl(),
-					scopes: 'email profile', // Specify required scopes
+					scopes:
+						'email profile https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events',
 				},
 			});
 			if (error) throw error;
