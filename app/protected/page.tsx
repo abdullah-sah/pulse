@@ -1,4 +1,3 @@
-import { getDailyTasks } from '@/app/actions';
 import FetchDataSteps from '@/components/tutorial/fetch-data-steps';
 import { createClient } from '@/utils/supabase/server';
 import { InfoIcon } from 'lucide-react';
@@ -14,9 +13,6 @@ export default async function ProtectedPage() {
 	if (!user) {
 		return redirect('/sign-in');
 	}
-
-	const dailyTasks = await getDailyTasks();
-	console.log('the daily tasks are', dailyTasks);
 
 	return (
 		<div className='flex-1 w-full flex flex-col gap-12'>

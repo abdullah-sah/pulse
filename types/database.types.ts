@@ -29,25 +29,40 @@ export type Database = {
       }
       task_cache: {
         Row: {
-          created_at: string
-          due_date: string
-          id: number
-          priority: string
-          summary: string
+          cached_at: string
+          description: string | null
+          end_time: string | null
+          google_calendar_id: string | null
+          id: string
+          link: string | null
+          start_time: string | null
+          status: string | null
+          summary: string | null
+          user_id: string | null
         }
         Insert: {
-          created_at?: string
-          due_date: string
-          id?: number
-          priority: string
-          summary: string
+          cached_at: string
+          description?: string | null
+          end_time?: string | null
+          google_calendar_id?: string | null
+          id?: string
+          link?: string | null
+          start_time?: string | null
+          status?: string | null
+          summary?: string | null
+          user_id?: string | null
         }
         Update: {
-          created_at?: string
-          due_date?: string
-          id?: number
-          priority?: string
-          summary?: string
+          cached_at?: string
+          description?: string | null
+          end_time?: string | null
+          google_calendar_id?: string | null
+          id?: string
+          link?: string | null
+          start_time?: string | null
+          status?: string | null
+          summary?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

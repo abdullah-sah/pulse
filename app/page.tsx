@@ -1,12 +1,11 @@
 'use client';
 
+import { getDailyTasks } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { createClient, getRedirectUrl } from '@/utils/supabase/client';
 
 export default function Home() {
 	const supabase = createClient();
-
-	console.log('the redirect url is', getRedirectUrl());
 
 	const handleSignIn = async () => {
 		try {
