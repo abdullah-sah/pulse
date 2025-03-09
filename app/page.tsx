@@ -1,7 +1,7 @@
 'use client';
 
-import { getDailyTasks } from '@/app/actions';
 import { Button } from '@/components/ui/button';
+import { GOOGLE_AUTH_SCOPES } from '@/utils/constants';
 import { createClient, getRedirectUrl } from '@/utils/supabase/client';
 
 export default function Home() {
@@ -13,8 +13,7 @@ export default function Home() {
 				provider: 'google',
 				options: {
 					redirectTo: getRedirectUrl(),
-					scopes:
-						'email profile https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events',
+					scopes: GOOGLE_AUTH_SCOPES,
 				},
 			});
 			if (error) throw error;

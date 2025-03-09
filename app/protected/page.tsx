@@ -1,3 +1,4 @@
+import { getUnreadGmailMessages, getUnreadEmailSummaries } from '@/app/actions';
 import FetchDataSteps from '@/components/tutorial/fetch-data-steps';
 import { createClient } from '@/utils/supabase/server';
 import { InfoIcon } from 'lucide-react';
@@ -13,6 +14,10 @@ export default async function ProtectedPage() {
 	if (!user) {
 		return redirect('/sign-in');
 	}
+
+	const geminiResponse = await getUnreadEmailSummaries();
+
+	console.log('geminiResponse', geminiResponse);
 
 	return (
 		<div className='flex-1 w-full flex flex-col gap-12'>
