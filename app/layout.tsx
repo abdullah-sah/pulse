@@ -30,15 +30,11 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en' className={geistSans.className} suppressHydrationWarning>
-			<body className='bg-background text-foreground'>
-				<ThemeProvider
-					attribute='class'
-					defaultTheme='system'
-					enableSystem
-					disableTransitionOnChange
-				>
+			<body className='relative flex flex-col p-6 space-y-6 min-h-screen text-foreground'>
+				<div className='fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-950 -z-10' />
+				<ThemeProvider attribute='class' defaultTheme='system' enableSystem>
 					<main className='min-h-screen flex flex-col items-center'>
-						<HeaderAuth />
+						{/* <HeaderAuth /> */}
 						{children}
 					</main>
 				</ThemeProvider>
