@@ -3,12 +3,11 @@
 import LineItem from '@/components/line-item';
 import SectionCard from '@/components/section-card';
 import { useEffect, useState } from 'react';
-import { calendar_v3 } from 'googleapis';
-import { fetchDailyTasks } from '@/utils/api/tasks';
+import { fetchDailyTasks } from '@/utils/api';
+import { TasksApiResponse } from '@/types/types';
 
 const TasksSection = () => {
-	const [tasks, setTasks] = useState<calendar_v3.Schema$Event[]>([]);
-	console.log('here are the tasks', tasks);
+	const [tasks, setTasks] = useState<TasksApiResponse>([]);
 
 	useEffect(() => {
 		const fetchTasks = async () => {

@@ -18,6 +18,5 @@ export const writePulseLog = async (deviceName: string) => {
 	if (error) {
 		throw new Error(`Failed to write pulse log: ${error.message}`);
 	}
-	console.log('heres the db response from the insert query', data);
 	return data;
 };

@@ -2,8 +2,11 @@ import { createClient } from '@/utils/supabase/server';
 import { google } from 'googleapis';
 import type { GeminiResponse } from '@/types/gemini.types';
 
-export const getUnreadGmailMessages = async () => {
+export const getUnreadGmailMessages = async (limit?: number) => {
 	const supabase = await createClient();
+	if (limit && limit > 100) {
+		throw new Error('Limit must be less than 100');
+	}
 
 	const {
 		data: { session },
@@ -34,6 +37,7 @@ export const getUnreadGmailMessages = async () => {
 	const response = await gmail.users.messages.list({
 		userId: 'me',
 		q: `is:unread after:${formattedDate}`,
+		maxResults: limit || 10,
 	});
 
 	const messages = response.data.messages;
@@ -121,7 +125,7 @@ export const getUnreadEmailSummaries = async () => {
 
 		const prompt =
 			`Here is a list of unread emails:\n\n${emailList}\n` +
-			`Analyze these emails and provide a JSON array of objects. Each object should have a "summary" property with a brief summary of the email's content, and a "priority" property with a number from 1-5 indicating importance (1 being highest priority).\n\n` +
+			`Analyze these emails and provide a JSON array of objects. Each object should have a "summary" property with a brief summary of the email's content, and a "priority" property with a number from 1-5 indicating importance (1 being highest priority). Marketing emails should be given a priority of 4 or 5 depending on the content.\n\n` +
 			`Return only the JSON array with no formatting characters, quotes, or additional text. For example:\n` +
 			`[{"summary":"Meeting request from CEO","priority":1},{"summary":"Newsletter subscription","priority":4}]`;
 
