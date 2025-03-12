@@ -11,8 +11,12 @@ const EmailsSection = () => {
 
 	useEffect(() => {
 		const fetchEmails = async () => {
-			const data = await fetchUnreadEmailSummaries();
-			setEmails(data);
+			try {
+				const data = await fetchUnreadEmailSummaries();
+				setEmails(data);
+			} catch (error) {
+				console.error('Error fetching unread email summaries:', error);
+			}
 		};
 		fetchEmails();
 	}, []);

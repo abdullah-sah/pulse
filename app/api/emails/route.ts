@@ -8,7 +8,7 @@ export async function GET() {
 	} catch (error) {
 		console.error('Error fetching unread email summaries:', error);
 		return NextResponse.json(
-			{ error: 'Failed to fetch unread email summaries' },
+			{ error: `Failed to fetch unread email summaries. ${error}` },
 			{ status: 500 }
 		);
 	}
