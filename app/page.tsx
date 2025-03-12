@@ -1,34 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { GOOGLE_AUTH_SCOPES } from '@/utils/constants';
-import { createClient, getRedirectUrl } from '@/utils/supabase/client';
+import Link from 'next/link';
 
 export default function Home() {
-	const supabase = createClient();
-
-	const handleSignIn = async () => {
-		try {
-			const { data, error } = await supabase.auth.signInWithOAuth({
-				provider: 'google',
-				options: {
-					redirectTo: getRedirectUrl(),
-					scopes: GOOGLE_AUTH_SCOPES,
-				},
-			});
-			if (error) throw error;
-			window.location.href = data.url;
-		} catch (error) {
-			// Proper error handling with user feedback
-			console.error('Authentication error:', error);
-			// Show user-friendly error message
-		}
-	};
-
 	return (
 		<>
-			<section className='flex-1 flex flex-col gap-6 px-4'>
-				<Button onClick={handleSignIn}>just some test text</Button>
+			<section className='flex flex-col items-center gap-6 px-4'>
+				<h1 className='text-4xl font-extrabold mt-12 mb-6'>Welcome to Pulse</h1>
+				<p className='text-lg text-gray-400 max-w-2xl'>
+					Pulse is your AI-powered productivity assistant, integrating with
+					Motion, Google Calendar, Gmail, and more to automate your workflow and
+					help you stay on top of your tasks effortlessly.
+				</p>
+				<div className='mt-6'>
+					<Button asChild className='text-lg' size='lg'>
+						<Link href='/sign-up'>Sign up to get started</Link>
+					</Button>
+				</div>
 			</section>
 		</>
 	);

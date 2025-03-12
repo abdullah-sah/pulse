@@ -21,7 +21,7 @@ const GoogleOAuthButton = ({ variant = 'sign-in' }: Props) => {
 				},
 			});
 			if (error) throw error;
-			encodedRedirect('success', '/protected', 'Signed in successfully');
+			encodedRedirect('success', '/app', 'Signed in successfully');
 		} catch (error) {
 			console.error('Authentication error:', error);
 			encodedRedirect('error', '/sign-in', 'Failed to sign in');

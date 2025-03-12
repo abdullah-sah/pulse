@@ -1,8 +1,8 @@
 import { createClient } from '@/utils/supabase/server';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { google } from 'googleapis';
+import { google, calendar_v3 } from 'googleapis';
 
-export const getDailyTasks = async () => {
+export const getDailyTasks = async (): Promise<calendar_v3.Schema$Event[]> => {
 	const supabase = await createClient();
 
 	try {
@@ -40,18 +40,7 @@ export const getDailyTasks = async () => {
 			orderBy: 'startTime',
 		});
 
-		// Transform and return the events
-		return (
-			response.data.items?.map((event) => ({
-				id: event.id,
-				summary: event.summary,
-				startTime: event.start?.dateTime || event.start?.date,
-				endTime: event.end?.dateTime || event.end?.date,
-				description: event.description,
-				status: event.status,
-				link: event.htmlLink,
-			})) || []
-		);
+		return response.data.items || [];
 	} catch (error) {
 		console.error('Error fetching calendar tasks:', error);
 		throw error;
@@ -76,11 +65,11 @@ export const refreshDailyTasksCache = async (client?: SupabaseClient) => {
 	const mappedTasks = dailyTasks.map((task) => ({
 		summary: task.summary,
 		description: task.description,
-		link: task.link,
+		link: task.htmlLink,
 		status: task.status,
 		google_calendar_id: task.id,
-		end_time: task.endTime,
-		start_time: task.startTime,
+		end_time: task.end?.dateTime || task.end?.date,
+		start_time: task.start?.dateTime || task.start?.date,
 		user_id: user.id,
 		cached_at: today,
 	}));

@@ -1,12 +1,8 @@
-import DeployButton from '@/components/deploy-button';
-import { EnvVarWarning } from '@/components/env-var-warning';
-import HeaderAuth from '@/components/header-auth';
-import { ThemeSwitcher } from '@/components/theme-switcher';
-import { hasEnvVars } from '@/utils/supabase/check-env-vars';
 import { Geist } from 'next/font/google';
 import { ThemeProvider } from 'next-themes';
-import Link from 'next/link';
 import './globals.css';
+import Header from '@/components/header';
+import { SessionProvider } from '@/contexts/session-context';
 
 const defaultUrl = process.env.VERCEL_URL
 	? `https://${process.env.VERCEL_URL}`
@@ -30,13 +26,15 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en' className={geistSans.className} suppressHydrationWarning>
-			<body className='relative flex flex-col p-6 space-y-6 min-h-screen text-foreground'>
+			<body className='relative flex flex-col p-6 pt-0 min-h-screen text-foreground'>
 				<div className='fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-950 -z-10' />
 				<ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-					<main className='min-h-screen flex flex-col items-center'>
-						{/* <HeaderAuth /> */}
-						{children}
-					</main>
+					<SessionProvider>
+						<main className='flex flex-1 flex-col gap-10 w-full'>
+							<Header />
+							{children}
+						</main>
+					</SessionProvider>
 				</ThemeProvider>
 			</body>
 		</html>

@@ -5,19 +5,20 @@ import Link from 'next/link';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { createClient } from '@/utils/supabase/client';
+import { redirect } from 'next/navigation';
+import { SessionContext } from '@/contexts/session-context';
+import { useContext } from 'react';
 
-export default function AuthButton() {
+export default function HeaderAuth() {
 	const supabase = createClient();
+	const session = useContext(SessionContext);
 
-	const handleSignIn = async () => {
-		const { data, error } = await supabase.auth.signInWithOAuth({
-			provider: 'google',
-		});
+	const handleSignOut = async () => {
+		const { error } = await supabase.auth.signOut();
 		if (error) {
-			console.error('Error signing in:', error);
-		} else {
-			console.log('Signed in with Google:', data);
+			console.error('Error signing out:', error);
 		}
+		redirect('/sign-in');
 	};
 
 	if (!hasEnvVars) {
@@ -38,12 +39,23 @@ export default function AuthButton() {
 	}
 	return (
 		<div className='flex gap-2'>
-			<Button size='sm' variant={'outline'} onClick={handleSignIn}>
-				Sign in
-			</Button>
-			<Button asChild size='sm' variant={'default'}>
-				<Link href='/sign-up'>Sign up</Link>
-			</Button>
+			{session ? (
+				<>
+					<Button size='sm' variant='outline' onClick={handleSignOut}>
+						Sign out
+					</Button>
+					{/* insert user avatar here */}
+				</>
+			) : (
+				<>
+					<Button asChild size='sm'>
+						<Link href='/sign-up'>Sign up</Link>
+					</Button>
+					<Button size='sm' variant='outline'>
+						<Link href='/sign-in'>Sign in</Link>
+					</Button>
+				</>
+			)}
 		</div>
 	);
 }
