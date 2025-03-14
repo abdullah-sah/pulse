@@ -1,14 +1,24 @@
 import { NextResponse } from 'next/server';
-import { getDailyTasks } from '@/app/actions/calendar';
+import { fetchProjects, fetchTasks } from '@/app/actions/tasks';
+import { MotionTask } from '@/types/motion.types';
 
 export async function GET() {
 	try {
-		const tasks = await getDailyTasks();
-		return NextResponse.json(tasks);
+		const { projects } = await fetchProjects();
+
+		const tasks = await Promise.all(
+			projects.map(async (project: { id: string }) => {
+				const { tasks } = await fetchTasks(project.id);
+				return tasks;
+			})
+		);
+		const flattenedTasks: MotionTask[] = tasks.flat();
+
+		return NextResponse.json(flattenedTasks);
 	} catch (error) {
-		console.error('Error fetching tasks:', error);
+		console.error(error);
 		return NextResponse.json(
-			{ error: 'Failed to fetch tasks' },
+			{ error: (error as Error).message },
 			{ status: 500 }
 		);
 	}

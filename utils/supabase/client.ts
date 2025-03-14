@@ -7,7 +7,7 @@ export const createClient = () =>
 	);
 
 export const getRedirectUrl = () => {
-	if (process.env.NEXT_PUBLIC_NODE_ENV === 'development') {
+	if (process.env.NODE_ENV === 'development') {
 		return 'http://localhost:3000/auth/callback';
 	}
 	return 'https://pulse-seven-kappa.vercel.app/auth/callback';

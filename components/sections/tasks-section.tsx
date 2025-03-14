@@ -4,10 +4,10 @@ import LineItem from '@/components/line-item';
 import SectionCard from '@/components/section-card';
 import { useEffect, useState } from 'react';
 import { fetchDailyTasks } from '@/utils/api';
-import { TasksApiResponse } from '@/types/types';
+import { MotionTask } from '@/types/motion.types';
 
 const TasksSection = () => {
-	const [tasks, setTasks] = useState<TasksApiResponse>([]);
+	const [tasks, setTasks] = useState<MotionTask[]>([]);
 
 	useEffect(() => {
 		const fetchTasks = async () => {
@@ -26,8 +26,8 @@ const TasksSection = () => {
 				{tasks.map((task) => (
 					<LineItem
 						key={task.id}
-						title={task.summary || ''}
-						description={task.description || ''}
+						title={task.name}
+						description={task.description}
 					/>
 				))}
 			</div>
