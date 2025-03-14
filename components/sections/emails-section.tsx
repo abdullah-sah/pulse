@@ -5,9 +5,11 @@ import { useState, useEffect } from 'react';
 import { fetchUnreadEmailSummaries } from '@/utils/api';
 import { UnreadEmailSummary } from '@/types/types';
 import LineItem from '@/components/line-item';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const EmailsSection = () => {
 	const [emails, setEmails] = useState<UnreadEmailSummary[]>([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		const fetchEmails = async () => {
@@ -16,6 +18,8 @@ const EmailsSection = () => {
 				setEmails(data);
 			} catch (error) {
 				console.error('Error fetching unread email summaries:', error);
+			} finally {
+				setLoading(false);
 			}
 		};
 		fetchEmails();
@@ -27,13 +31,21 @@ const EmailsSection = () => {
 			description='These are the latest unread emails that you have received, based on priority level.'
 		>
 			<ul className='mt-2 space-y-2 text-gray-300'>
-				{emails.map((email, i) => (
-					<LineItem
-						key={`email summary ${i}`}
-						title={email.summary}
-						description={`Priority level: ${email.priority}`}
-					/>
-				))}
+				{loading ? (
+					<>
+						<Skeleton className='h-[60px] w-full' />
+						<Skeleton className='h-[60px] w-full' />
+						<Skeleton className='h-[60px] w-full' />
+					</>
+				) : (
+					emails.map((email, i) => (
+						<LineItem
+							key={`email summary ${i}`}
+							title={email.summary}
+							description={`Priority level: ${email.priority}`}
+						/>
+					))
+				)}
 			</ul>
 		</SectionCard>
 	);
