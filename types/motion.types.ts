@@ -13,24 +13,24 @@ export type MotionTask = {
 	name: string;
 	description: string;
 	duration: number;
-	dueDate: Date;
-	deadlineType: string;
-	parentRecurringTaskId: string | null;
+	dueDate: string; // db column: due_date
+	deadlineType: string; // db column: deadline_type
+	parentRecurringTaskId: string | null; // db column: parent_recurring_task_id
 	completed: boolean;
-	completedTime: null;
-	startOn: Date;
+	completedTime: null; // db column: completed_time
+	startOn: string; // db column: start_on
 	creator: Creator;
 	workspace: Workspace;
-	project: Project | null;
+	project: MotionProject | null;
 	status: Status;
 	priority: string;
 	labels: any[];
 	assignees: Creator[];
-	scheduledStart: Date | null;
-	createdTime: Date;
-	scheduledEnd: Date | null;
-	schedulingIssue: boolean;
-	lastInteractedTime: Date;
+	scheduledStart: string | null; // db column: scheduled_start
+	createdTime: string; // not in db
+	scheduledEnd: string | null; // db column: scheduled_end
+	schedulingIssue: boolean; // db column: scheduling_issue
+	lastInteractedTime: string; // db column: last_interacted_time
 };
 
 export type Creator = {
@@ -39,7 +39,7 @@ export type Creator = {
 	email: string;
 };
 
-export type Project = {
+export type MotionProject = {
 	id: string;
 	name: string;
 	description: string;

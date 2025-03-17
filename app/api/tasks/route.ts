@@ -1,20 +1,26 @@
 import { NextResponse } from 'next/server';
-import { fetchProjects, fetchTasks } from '@/app/actions/tasks';
-import { MotionTask } from '@/types/motion.types';
+import {
+	fetchTasksFromCache,
+	isTodayTasksCached,
+	refreshDailyTasksCache,
+} from '@/app/actions/tasks';
 
 export async function GET() {
 	try {
-		const { projects } = await fetchProjects();
+		// fetch from cache if there is entries for this user from today
+		const hasCachedTasks = await isTodayTasksCached();
+		if (hasCachedTasks) {
+			const cache = await fetchTasksFromCache();
+			return NextResponse.json(cache);
+		}
 
-		const tasks = await Promise.all(
-			projects.map(async (project: { id: string }) => {
-				const { tasks } = await fetchTasks(project.id);
-				return tasks;
-			})
-		);
-		const flattenedTasks: MotionTask[] = tasks.flat();
+		const { success, data, error } = await refreshDailyTasksCache();
 
-		return NextResponse.json(flattenedTasks);
+		if (!success) {
+			return NextResponse.json({ error }, { status: 500 });
+		}
+
+		return NextResponse.json(data);
 	} catch (error) {
 		console.error(error);
 		return NextResponse.json(

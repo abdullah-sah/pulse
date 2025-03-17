@@ -1,4 +1,4 @@
-import { fetchDailyTasks } from './tasks';
+import { fetchDailyTasks, refreshDailyTasks } from './tasks';
 import { fetchUnreadEmailSummaries } from './emails';
 
-export { fetchDailyTasks, fetchUnreadEmailSummaries };
+export { fetchDailyTasks, fetchUnreadEmailSummaries, refreshDailyTasks };

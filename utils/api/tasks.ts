@@ -10,3 +10,9 @@ export const fetchDailyTasks = async (): Promise<MotionTask[]> => {
 		throw error;
 	}
 };
+
+export const refreshDailyTasks = async () => {
+	const res = await fetch('/api/cache-tasks');
+	const { data } = await res.json();
+	return data;
+};
