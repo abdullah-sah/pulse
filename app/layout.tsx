@@ -1,8 +1,7 @@
 import { Geist } from 'next/font/google';
-import { ThemeProvider } from 'next-themes';
 import './globals.css';
 import Header from '@/components/header';
-import { SessionProvider } from '@/contexts/session-context';
+import Providers from '@/providers';
 
 const defaultUrl = process.env.VERCEL_URL
 	? `https://${process.env.VERCEL_URL}`
@@ -28,14 +27,12 @@ export default function RootLayout({
 		<html lang='en' className={geistSans.className} suppressHydrationWarning>
 			<body className='relative flex flex-col p-6 pt-0 min-h-screen text-foreground'>
 				<div className='fixed inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-950 -z-10' />
-				<ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-					<SessionProvider>
-						<main className='flex flex-1 flex-col gap-10 w-full'>
-							<Header />
-							{children}
-						</main>
-					</SessionProvider>
-				</ThemeProvider>
+				<Providers>
+					<main className='flex flex-1 flex-col gap-10 w-full'>
+						<Header />
+						{children}
+					</main>
+				</Providers>
 			</body>
 		</html>
 	);
