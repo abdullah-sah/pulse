@@ -68,18 +68,33 @@ const config = {
 					to: { height: '0' },
 				},
 				'pulse-shadow': {
-					'0%, 100%': {
+					'0%': {
 						boxShadow: '0 4px 6px -1px rgba(255, 255, 255, 0.1)',
 					},
+					'20%': {
+						boxShadow: '0 4px 8px -1px rgba(255, 255, 255, 0.13)',
+					},
+					'40%': {
+						boxShadow: '0 4px 10px -1px rgba(255, 255, 255, 0.16)',
+					},
 					'50%': {
-						boxShadow: '0 4px 15px -1px rgba(255, 255, 255, 0.2)',
+						boxShadow: '0 4px 12px -1px rgba(255, 255, 255, 0.2)',
+					},
+					'60%': {
+						boxShadow: '0 4px 10px -1px rgba(255, 255, 255, 0.16)',
+					},
+					'80%': {
+						boxShadow: '0 4px 8px -1px rgba(255, 255, 255, 0.13)',
+					},
+					'100%': {
+						boxShadow: '0 4px 6px -1px rgba(255, 255, 255, 0.1)',
 					},
 				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'pulse-shadow': 'pulse-shadow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+				'pulse-shadow': 'pulse-shadow 4s ease-in-out infinite',
 			},
 		},
 	},
