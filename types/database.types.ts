@@ -9,6 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      motion_tasks_cache: {
+        Row: {
+          cached_on: string | null
+          completed: boolean
+          deadline_type: string
+          description: string
+          due_date: string
+          duration: number
+          id: string
+          motion_task_id: string
+          name: string
+          parent_recurring_task_id: string | null
+          priority: string | null
+          project_id: string | null
+          scheduled_end: string | null
+          scheduled_start: string | null
+          scheduling_issues: boolean | null
+          start_on: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          cached_on?: string | null
+          completed: boolean
+          deadline_type: string
+          description: string
+          due_date: string
+          duration: number
+          id?: string
+          motion_task_id: string
+          name: string
+          parent_recurring_task_id?: string | null
+          priority?: string | null
+          project_id?: string | null
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          scheduling_issues?: boolean | null
+          start_on: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          cached_on?: string | null
+          completed?: boolean
+          deadline_type?: string
+          description?: string
+          due_date?: string
+          duration?: number
+          id?: string
+          motion_task_id?: string
+          name?: string
+          parent_recurring_task_id?: string | null
+          priority?: string | null
+          project_id?: string | null
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          scheduling_issues?: boolean | null
+          start_on?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       pulse_logs: {
         Row: {
           created_at: string | null
@@ -24,45 +87,6 @@ export type Database = {
           created_at?: string | null
           device?: string | null
           id?: string
-        }
-        Relationships: []
-      }
-      task_cache: {
-        Row: {
-          cached_at: string
-          description: string | null
-          end_time: string | null
-          google_calendar_id: string | null
-          id: string
-          link: string | null
-          start_time: string | null
-          status: string | null
-          summary: string | null
-          user_id: string | null
-        }
-        Insert: {
-          cached_at: string
-          description?: string | null
-          end_time?: string | null
-          google_calendar_id?: string | null
-          id?: string
-          link?: string | null
-          start_time?: string | null
-          status?: string | null
-          summary?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          cached_at?: string
-          description?: string | null
-          end_time?: string | null
-          google_calendar_id?: string | null
-          id?: string
-          link?: string | null
-          start_time?: string | null
-          status?: string | null
-          summary?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }

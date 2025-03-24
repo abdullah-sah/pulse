@@ -1,17 +1,9 @@
 import { NextResponse } from 'next/server';
-import { refreshDailyTasksCache } from '@/app/actions/calendar';
 import { createClient } from '@/utils/supabase/server';
+import { refreshDailyTasksCache } from '@/app/actions/tasks';
 
 // TODO WIP: This is a route to cache the tasks for the use
-export async function POST(req: Request) {
-	const authHeader = req.headers.get('Authorization')?.split(' ')[1];
-	if (!authHeader) {
-		return NextResponse.json(
-			{ error: 'Missing authorization header' },
-			{ status: 401 }
-		);
-	}
-
+export async function GET() {
 	const supabase = await createClient();
 
 	const {
@@ -23,7 +15,11 @@ export async function POST(req: Request) {
 		return NextResponse.json({ error: error?.message }, { status: 401 });
 	}
 
-	await refreshDailyTasksCache(supabase);
+	const { success, data, error: refreshError } = await refreshDailyTasksCache();
 
-	return NextResponse.json({ message: 'Tasks cached', error: null });
+	if (!success) {
+		return NextResponse.json({ error: refreshError }, { status: 500 });
+	}
+
+	return NextResponse.json({ message: 'Tasks cached', data });
 }

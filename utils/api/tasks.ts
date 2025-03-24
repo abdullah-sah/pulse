@@ -1,10 +1,18 @@
-import type { TasksApiResponse } from '@/types/types';
+import type { MotionTask } from '@/types/motion.types';
 
-export const fetchDailyTasks = async (): Promise<TasksApiResponse> => {
-	const response = await fetch('/api/tasks');
-	if (!response.ok) {
-		throw new Error('Failed to fetch tasks');
+export const fetchDailyTasks = async (): Promise<MotionTask[]> => {
+	try {
+		const res = await fetch('/api/tasks');
+		const data = await res.json();
+		return data;
+	} catch (error) {
+		console.error(error);
+		throw error;
 	}
-	const data = await response.json();
+};
+
+export const refreshDailyTasks = async () => {
+	const res = await fetch('/api/cache-tasks');
+	const { data } = await res.json();
 	return data;
 };
