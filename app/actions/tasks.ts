@@ -3,11 +3,37 @@ import { MotionTask, MotionProject } from '@/types/motion.types';
 import { MOTION_BASE_URL } from '@/utils/constants';
 import { createClient } from '@/utils/supabase/server';
 
+// Helper to get the user's Motion API key
+const getUserMotionApiKey = async (): Promise<string> => {
+	const supabase = await createClient();
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	if (!user) {
+		throw new Error('User not found');
+	}
+
+	const { data, error } = await supabase
+		.from('user_profiles')
+		.select('motion_api_key')
+		.eq('id', user.id)
+		.single();
+
+	if (error || !data || !data.motion_api_key) {
+		throw new Error('Motion API key not configured');
+	}
+
+	return data.motion_api_key;
+};
+
 export const fetchProjects = async (): Promise<{
 	projects: MotionProject[];
 }> => {
 	// TODO: needs to be updated so that workspaceId is fetched from the user
 	try {
+		const apiKey = await getUserMotionApiKey();
+
 		const queryParams = new URLSearchParams({
 			workspaceId: 'ujTIYIqg-dfqKYrz8KQZJ',
 		});
@@ -16,12 +42,17 @@ export const fetchProjects = async (): Promise<{
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-API-Key': process.env.MOTION_API_KEY as string,
+				'X-API-Key': apiKey,
 			},
 		});
 
 		if (!response.ok) {
-			throw new Error(`Failed to fetch motion projects: ${response}`);
+			if (response.status === 401 || response.status === 403) {
+				throw new Error('Invalid Motion API key. Authentication failed.');
+			}
+			throw new Error(
+				`Failed to fetch motion projects: ${await response.text()}`
+			);
 		}
 
 		const data = await response.json();
@@ -36,6 +67,8 @@ export const fetchTasks = async (
 	projectId: string
 ): Promise<{ tasks: MotionTask[] }> => {
 	try {
+		const apiKey = await getUserMotionApiKey();
+
 		const queryParams = new URLSearchParams({
 			projectId,
 			status: 'todo',
@@ -45,12 +78,15 @@ export const fetchTasks = async (
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				'X-API-Key': process.env.MOTION_API_KEY as string,
+				'X-API-Key': apiKey,
 			},
 		});
 
 		if (!response.ok) {
-			throw new Error(`Failed to fetch motion tasks: ${response}`);
+			if (response.status === 401 || response.status === 403) {
+				throw new Error('Invalid Motion API key. Authentication failed.');
+			}
+			throw new Error(`Failed to fetch motion tasks: ${await response.text()}`);
 		}
 
 		const data = await response.json();
@@ -207,22 +243,48 @@ export const refreshDailyTasksCache = async () => {
 			throw new Error('User not found');
 		}
 
-		const { projects } = await fetchProjects();
-		const tasks = await Promise.all(
-			projects.map(async (project: { id: string }) => {
-				const { tasks } = await fetchTasks(project.id);
-				return tasks;
-			})
-		);
+		// Verify the user has a valid API key
+		const { data: profile, error: profileError } = await supabase
+			.from('user_profiles')
+			.select('motion_api_key')
+			.eq('id', user.id)
+			.single();
 
-		const flattenedTasks: MotionTask[] = tasks.flat();
-		const result = await Promise.all(
-			flattenedTasks.map(async (task) => {
-				return await createOrUpdateTaskCache(task);
-			})
-		);
+		if (profileError || !profile || !profile.motion_api_key) {
+			throw new Error('Motion API key not configured');
+		}
 
-		return { success: true, data: result.flat() };
+		try {
+			const { projects } = await fetchProjects();
+			const tasks = await Promise.all(
+				projects.map(async (project: { id: string }) => {
+					const { tasks } = await fetchTasks(project.id);
+					return tasks;
+				})
+			);
+
+			const flattenedTasks: MotionTask[] = tasks.flat();
+			const result = await Promise.all(
+				flattenedTasks.map(async (task) => {
+					return await createOrUpdateTaskCache(task);
+				})
+			);
+
+			return { success: true, data: result.flat() };
+		} catch (apiError) {
+			// Specifically handle Motion API authentication errors
+			if (
+				apiError instanceof Error &&
+				(apiError.message.includes('Authentication failed') ||
+					apiError.message.includes('Invalid Motion API key'))
+			) {
+				return {
+					success: false,
+					error: 'Invalid Motion API key. Authentication failed.',
+				};
+			}
+			throw apiError; // re-throw other errors
+		}
 	} catch (error) {
 		console.error(error);
 		return { success: false, error: (error as Error).message };

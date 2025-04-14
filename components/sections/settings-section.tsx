@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { createClient } from '@/utils/supabase/client';
+import { validateMotionApiKey } from '@/utils/api/motion';
 import { useState, useEffect } from 'react';
 
 const SettingsSection = () => {
 	const { toast } = useToast();
 	const [apiKey, setApiKey] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
+	const [validationError, setValidationError] = useState<string | null>(null);
 
 	// Load existing API key when component mounts
 	useEffect(() => {
@@ -38,23 +40,37 @@ const SettingsSection = () => {
 
 	const handleSave = async () => {
 		setIsLoading(true);
-		const supabase = createClient();
-		const {
-			data: { user },
-			error: userError,
-		} = await supabase.auth.getUser();
-
-		if (userError || !user) {
-			toast({
-				title: 'Error saving settings',
-				description: 'User not authenticated',
-				variant: 'destructive',
-			});
-			setIsLoading(false);
-			return;
-		}
+		setValidationError(null);
 
 		try {
+			// Validate the API key
+			const validation = await validateMotionApiKey(apiKey);
+			if (!validation.isValid) {
+				setValidationError(validation.message || 'Invalid API key');
+				setIsLoading(false);
+				toast({
+					title: 'Invalid API Key',
+					description: validation.message || 'The provided API key is invalid.',
+					variant: 'destructive',
+				});
+				return;
+			}
+
+			const supabase = createClient();
+			const {
+				data: { user },
+				error: userError,
+			} = await supabase.auth.getUser();
+
+			if (userError || !user) {
+				toast({
+					title: 'Error saving settings',
+					description: 'User not authenticated',
+					variant: 'destructive',
+				});
+				return;
+			}
+
 			// Check if user profile exists
 			const { data: existingProfile, error: fetchError } = await supabase
 				.from('user_profiles')
@@ -86,7 +102,8 @@ const SettingsSection = () => {
 
 			toast({
 				title: '✅ Settings saved',
-				description: 'Your Motion API key has been saved successfully.',
+				description:
+					'Your Motion API key has been validated and saved successfully.',
 			});
 		} catch (error) {
 			console.error('Error saving settings:', error);
@@ -114,17 +131,23 @@ const SettingsSection = () => {
 				>
 					Motion Calendar Integration
 				</label>
-				<div className='flex gap-2'>
-					<Input
-						type='password'
-						id='motion-calendar-integration'
-						placeholder='Enter your Motion API key'
-						value={apiKey}
-						onChange={(e) => setApiKey(e.target.value)}
-					/>
-					<Button variant='default' onClick={handleSave} disabled={isLoading}>
-						{isLoading ? 'Saving...' : 'Save'}
-					</Button>
+				<div className='flex flex-col gap-2'>
+					<div className='flex gap-2'>
+						<Input
+							type='password'
+							id='motion-calendar-integration'
+							placeholder='Enter your Motion API key'
+							value={apiKey}
+							onChange={(e) => setApiKey(e.target.value)}
+							className={validationError ? 'border-red-500' : ''}
+						/>
+						<Button variant='default' onClick={handleSave} disabled={isLoading}>
+							{isLoading ? 'Validating...' : 'Save'}
+						</Button>
+					</div>
+					{validationError && (
+						<p className='text-sm text-red-500 mt-1'>{validationError}</p>
+					)}
 				</div>
 			</div>
 		</SectionCard>
