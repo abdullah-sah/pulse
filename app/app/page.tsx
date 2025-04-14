@@ -26,9 +26,6 @@ export default async function AppPage() {
 
 			{/* Summarised Emails Section */}
 			<EmailsSection />
-
-			{/* Settings Section */}
-			<SettingsSection />
 		</div>
 	);
 }

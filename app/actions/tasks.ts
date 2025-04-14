@@ -120,6 +120,7 @@ export const isTodayTasksCached = async (): Promise<boolean> => {
 	}
 };
 
+//! We need this to work even for users who are using the same motion api key
 export const createOrUpdateTaskCache = async (task: MotionTask) => {
 	try {
 		const supabase = await createClient();
@@ -131,39 +132,66 @@ export const createOrUpdateTaskCache = async (task: MotionTask) => {
 			throw new Error('User not found');
 		}
 
-		const { data, error } = await supabase
+		// First, check if this task already exists for this user specifically
+		const { data: existingTask, error: selectError } = await supabase
 			.from('motion_tasks_cache')
-			.upsert(
-				{
-					motion_task_id: task.id,
-					name: task.name,
-					description: task.description,
-					duration: task.duration as number,
-					due_date: task.dueDate,
-					deadline_type: task.deadlineType,
-					parent_recurring_task_id: task.parentRecurringTaskId,
-					completed: task.completed,
-					start_on: task.startOn,
-					project_id: task.project?.id,
-					status: task.status.name,
-					priority: task.priority,
-					scheduled_start: task.scheduledStart,
-					scheduled_end: task.scheduledEnd,
-					scheduling_issues: task.schedulingIssue,
-					user_id: user.id,
-					cached_on: new Date().toISOString(),
-				},
-				{ onConflict: 'motion_task_id' }
-			)
-			.select();
+			.select('*')
+			.eq('motion_task_id', task.id)
+			.eq('user_id', user.id)
+			.single();
 
-		if (error) {
-			console.error(error);
-			throw error;
+		const taskData = {
+			motion_task_id: task.id,
+			name: task.name,
+			description: task.description,
+			duration: task.duration as number,
+			due_date: task.dueDate,
+			deadline_type: task.deadlineType,
+			parent_recurring_task_id: task.parentRecurringTaskId,
+			completed: task.completed,
+			start_on: task.startOn,
+			project_id: task.project?.id,
+			status: task.status.name,
+			priority: task.priority,
+			scheduled_start: task.scheduledStart,
+			scheduled_end: task.scheduledEnd,
+			scheduling_issues: task.schedulingIssue,
+			user_id: user.id,
+			cached_on: new Date().toISOString(),
+		};
+
+		let result;
+		if (existingTask) {
+			// Update existing task
+			const { data, error } = await supabase
+				.from('motion_tasks_cache')
+				.update(taskData)
+				.eq('motion_task_id', task.id)
+				.eq('user_id', user.id)
+				.select();
+
+			if (error) {
+				console.error('Error updating task:', error);
+				throw error;
+			}
+			result = data;
+		} else {
+			// Insert new task
+			const { data, error } = await supabase
+				.from('motion_tasks_cache')
+				.insert(taskData)
+				.select();
+
+			if (error) {
+				console.error('Error inserting task:', error);
+				throw error;
+			}
+			result = data;
 		}
-		return data;
+
+		return result;
 	} catch (error) {
-		console.error(error);
+		console.error('Error in createOrUpdateTaskCache:', error);
 		throw error;
 	}
 };
@@ -179,7 +207,6 @@ export const refreshDailyTasksCache = async () => {
 			throw new Error('User not found');
 		}
 
-		// todo: make this a helper function (repeated in api/tasks/route.ts)
 		const { projects } = await fetchProjects();
 		const tasks = await Promise.all(
 			projects.map(async (project: { id: string }) => {
