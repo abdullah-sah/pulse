@@ -1,7 +1,7 @@
 'use client';
 import { GOOGLE_AUTH_SCOPES } from '@/utils/constants';
 import { createClient, getRedirectUrl } from '@/utils/supabase/client';
-import { encodedRedirect } from '@/utils/utils';
+import { encodedRedirect } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { FcGoogle } from 'react-icons/fc';
 

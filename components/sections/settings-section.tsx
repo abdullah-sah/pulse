@@ -4,8 +4,11 @@ import SectionCard from '@/components/section-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { createClient } from '@/utils/supabase/client';
-import { validateMotionApiKey } from '@/utils/api/motion';
+import {
+	validateMotionApiKey,
+	getUserMotionApiKey,
+	updateUserMotionApiKey,
+} from '@/utils';
 import { useState, useEffect } from 'react';
 
 const SettingsSection = () => {
@@ -17,21 +20,9 @@ const SettingsSection = () => {
 	// Load existing API key when component mounts
 	useEffect(() => {
 		const loadApiKey = async () => {
-			const supabase = createClient();
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-
-			if (user) {
-				const { data, error } = await supabase
-					.from('user_profiles')
-					.select('motion_api_key')
-					.eq('id', user.id)
-					.single();
-
-				if (data && !error) {
-					setApiKey(data.motion_api_key || '');
-				}
+			const key = await getUserMotionApiKey(false);
+			if (key) {
+				setApiKey(key);
 			}
 		};
 
@@ -56,48 +47,11 @@ const SettingsSection = () => {
 				return;
 			}
 
-			const supabase = createClient();
-			const {
-				data: { user },
-				error: userError,
-			} = await supabase.auth.getUser();
+			// Update user's API key
+			const result = await updateUserMotionApiKey(apiKey);
 
-			if (userError || !user) {
-				toast({
-					title: 'Error saving settings',
-					description: 'User not authenticated',
-					variant: 'destructive',
-				});
-				return;
-			}
-
-			// Check if user profile exists
-			const { data: existingProfile, error: fetchError } = await supabase
-				.from('user_profiles')
-				.select('id')
-				.eq('id', user.id)
-				.single();
-
-			if (fetchError && fetchError.code !== 'PGRST116') {
-				// PGRST116 is "not found" error
-				throw fetchError;
-			}
-
-			if (existingProfile) {
-				// Update existing profile
-				const { error: updateError } = await supabase
-					.from('user_profiles')
-					.update({ motion_api_key: apiKey })
-					.eq('id', user.id);
-
-				if (updateError) throw updateError;
-			} else {
-				// Create new profile
-				const { error: insertError } = await supabase
-					.from('user_profiles')
-					.insert({ id: user.id, motion_api_key: apiKey });
-
-				if (insertError) throw insertError;
+			if (!result.success) {
+				throw new Error(result.error);
 			}
 
 			toast({

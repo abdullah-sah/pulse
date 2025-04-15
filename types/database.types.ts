@@ -94,14 +94,23 @@ export type Database = {
         Row: {
           id: string
           motion_api_key: string | null
+          motion_workspace_id: string | null
+          preferences: Json | null
+          quran_revision: number | null
         }
         Insert: {
           id: string
           motion_api_key?: string | null
+          motion_workspace_id?: string | null
+          preferences?: Json | null
+          quran_revision?: number | null
         }
         Update: {
           id?: string
           motion_api_key?: string | null
+          motion_workspace_id?: string | null
+          preferences?: Json | null
+          quran_revision?: number | null
         }
         Relationships: []
       }

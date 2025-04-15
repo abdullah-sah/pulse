@@ -1,36 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
+import { ensureUserProfileExists } from '@/utils';
 import { NextResponse } from 'next/server';
-
-// Helper function to ensure a user profile exists
-const ensureUserProfileExists = async (supabase: any, userId: string) => {
-	try {
-		// Check if user profile exists
-		const { data: existingProfile, error: fetchError } = await supabase
-			.from('user_profiles')
-			.select('id')
-			.eq('id', userId)
-			.single();
-
-		if (fetchError && fetchError.code !== 'PGRST116') {
-			// PGRST116 is "not found" error
-			console.error('Error checking user profile:', fetchError);
-			return;
-		}
-
-		if (!existingProfile) {
-			// Create new profile if it doesn't exist
-			const { error: insertError } = await supabase
-				.from('user_profiles')
-				.insert({ id: userId });
-
-			if (insertError) {
-				console.error('Failed to create user profile:', insertError);
-			}
-		}
-	} catch (error) {
-		console.error('Error in ensureUserProfileExists:', error);
-	}
-};
 
 export async function GET(request: Request) {
 	// The `/auth/callback` route is required for the server-side auth flow implemented

@@ -1,31 +1,7 @@
 import { Tables } from '@/types/database.types';
 import { MotionTask, MotionProject } from '@/types/motion.types';
-import { MOTION_BASE_URL } from '@/utils/constants';
+import { MOTION_BASE_URL, getUserMotionApiKey } from '@/utils';
 import { createClient } from '@/utils/supabase/server';
-
-// Helper to get the user's Motion API key
-const getUserMotionApiKey = async (): Promise<string> => {
-	const supabase = await createClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-
-	if (!user) {
-		throw new Error('User not found');
-	}
-
-	const { data, error } = await supabase
-		.from('user_profiles')
-		.select('motion_api_key')
-		.eq('id', user.id)
-		.single();
-
-	if (error || !data || !data.motion_api_key) {
-		throw new Error('Motion API key not configured');
-	}
-
-	return data.motion_api_key;
-};
 
 export const fetchProjects = async (): Promise<{
 	projects: MotionProject[];
@@ -33,6 +9,10 @@ export const fetchProjects = async (): Promise<{
 	// TODO: needs to be updated so that workspaceId is fetched from the user
 	try {
 		const apiKey = await getUserMotionApiKey();
+
+		if (!apiKey) {
+			throw new Error('Motion API key not configured');
+		}
 
 		const queryParams = new URLSearchParams({
 			workspaceId: 'ujTIYIqg-dfqKYrz8KQZJ',
@@ -68,6 +48,10 @@ export const fetchTasks = async (
 ): Promise<{ tasks: MotionTask[] }> => {
 	try {
 		const apiKey = await getUserMotionApiKey();
+
+		if (!apiKey) {
+			throw new Error('Motion API key not configured');
+		}
 
 		const queryParams = new URLSearchParams({
 			projectId,

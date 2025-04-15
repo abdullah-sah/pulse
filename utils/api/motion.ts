@@ -20,7 +20,7 @@ export const validateMotionApiKey = async (
 
 	try {
 		// Using the projects endpoint for validation, including required workspaceId
-		// TODO: In production, this should be fetched from user settings if available
+		// TODO: In prod this would be fetched from user settings if available
 		const queryParams = new URLSearchParams({
 			workspaceId: 'ujTIYIqg-dfqKYrz8KQZJ',
 		});
@@ -50,7 +50,7 @@ export const validateMotionApiKey = async (
 			};
 		}
 
-		// If we get here, the key is valid
+		// If we get to this point then the key is valid
 		return { isValid: true };
 	} catch (error) {
 		console.error('Error validating Motion API key:', error);

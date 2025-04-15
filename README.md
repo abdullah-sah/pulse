@@ -59,6 +59,55 @@
    npm run dev
    ```
 
+## Project Structure
+
+The project is organized into logical directories with a focus on maintainability and scalability:
+
+### Core Directories
+
+- `/app`: Next.js app router files and API routes
+- `/components`: UI components organized by type
+- `/contexts`: React contexts for state management
+- `/hooks`: Custom React hooks
+- `/lib`: Legacy utility code (pending migration)
+- `/public`: Static assets
+- `/supabase`: Supabase configuration and migrations
+- `/types`: TypeScript type definitions
+- `/utils`: Utility functions (reorganized)
+
+### Utilities Organization
+
+All utility functions are exported from a central location for easier imports:
+
+```typescript
+// Example usage
+import { cn, truncateText, validateMotionApiKey } from '@/utils';
+```
+
+#### Categorized Utilities
+
+- **Text Utilities** (`/utils/text.ts`): 
+  - `cn()`: Class name merging for Tailwind
+  - `truncateText()`, `cleanAndTruncateHtml()`
+
+- **Navigation Utilities** (`/utils/navigation.ts`):
+  - `encodedRedirect()`: Handle redirects with encoded messages
+
+- **API Utilities** (`/utils/api/`):
+  - Motion API integration
+  - Tasks and email data fetching
+
+- **Supabase Utilities** (`/utils/supabase/`):
+  - Server/client Supabase clients
+  - User profile management
+
+### Components Organization
+
+- `/components/ui/`: Shadcn UI components
+- `/components/sections/`: Page section components
+- `/components/svg/`: SVG components
+- `/components/typography/`: Typography components
+
 ## Environment Variables
 
 - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL

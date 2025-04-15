@@ -1,6 +1,6 @@
 'use server';
 
-import { encodedRedirect } from '@/utils/utils';
+import { encodedRedirect, ensureUserProfileExists } from '@/utils';
 import { createClient } from '@/utils/supabase/server';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -33,12 +33,10 @@ export const signUpAction = async (formData: FormData) => {
 	}
 
 	if (authData.user) {
-		const { error: profileError } = await supabase
-			.from('user_profiles')
-			.insert([{ id: authData.user.id }]);
+		const success = await ensureUserProfileExists(supabase, authData.user.id);
 
-		if (profileError) {
-			console.error('Failed to create user profile:', profileError);
+		if (!success) {
+			console.error('Failed to create user profile');
 			return encodedRedirect(
 				'error',
 				'/sign-up',
@@ -74,37 +72,6 @@ export const signInAction = async (formData: FormData) => {
 	}
 
 	return redirect('/app');
-};
-
-// Helper function to ensure a user profile exists
-const ensureUserProfileExists = async (supabase: any, userId: string) => {
-	try {
-		// Check if user profile exists
-		const { data: existingProfile, error: fetchError } = await supabase
-			.from('user_profiles')
-			.select('id')
-			.eq('id', userId)
-			.single();
-
-		if (fetchError && fetchError.code !== 'PGRST116') {
-			// PGRST116 is "not found" error
-			console.error('Error checking user profile:', fetchError);
-			return;
-		}
-
-		if (!existingProfile) {
-			// Create new profile if it doesn't exist
-			const { error: insertError } = await supabase
-				.from('user_profiles')
-				.insert({ id: userId });
-
-			if (insertError) {
-				console.error('Failed to create user profile:', insertError);
-			}
-		}
-	} catch (error) {
-		console.error('Error in ensureUserProfileExists:', error);
-	}
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
