@@ -2,12 +2,12 @@
 
 import LineItem from '@/components/line-item';
 import SectionCard from '@/components/section-card';
-import { fetchDailyTasks, refreshDailyTasks } from '@/utils/api';
+import { fetchDailyTasks, refreshDailyTasks } from '@/lib/utils/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import RefreshCircle from '@/components/svg/refresh-circle';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/utils/supabase/client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MotionTask } from '@/types/motion.types';

@@ -1,8 +1,7 @@
 import EmailsSection from '@/components/sections/emails-section';
 import EventsSection from '@/components/sections/events-section';
-import SettingsSection from '@/components/sections/settings-section';
 import TasksSection from '@/components/sections/tasks-section';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
 export default async function AppPage() {

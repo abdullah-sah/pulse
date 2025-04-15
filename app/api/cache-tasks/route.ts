@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/utils/supabase/server';
 import { refreshDailyTasksCache } from '@/app/actions/tasks';
 
 // TODO WIP: This is a route to cache the tasks for the use

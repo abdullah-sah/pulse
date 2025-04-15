@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/utils/supabase/server';
 import { google } from 'googleapis';
 import type { GeminiResponse } from '@/types/gemini.types';
 

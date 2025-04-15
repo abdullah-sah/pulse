@@ -1,10 +1,10 @@
 'use client';
 
-import { hasEnvVars } from '@/utils/supabase/check-env-vars';
+import { hasEnvVars } from '@/lib/utils/supabase/check-env-vars';
 import Link from 'next/link';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/utils/supabase/client';
 import { redirect } from 'next/navigation';
 import { SessionContext } from '@/contexts/session-context';
 import { useContext } from 'react';

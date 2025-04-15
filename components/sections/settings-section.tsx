@@ -8,7 +8,7 @@ import {
 	validateMotionApiKey,
 	getUserMotionApiKey,
 	updateUserMotionApiKey,
-} from '@/utils';
+} from '@/lib/utils';
 import { useState, useEffect } from 'react';
 
 const SettingsSection = () => {

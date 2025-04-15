@@ -2,7 +2,7 @@
 
 import { createContext, useEffect, useState } from 'react';
 import { Session } from '@supabase/supabase-js';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '@/lib/utils/supabase/client';
 
 export const SessionContext = createContext<Session | null>(null);
 

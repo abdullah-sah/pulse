@@ -4,7 +4,7 @@ import {
 	isTodayTasksCached,
 	refreshDailyTasksCache,
 } from '@/app/actions/tasks';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/utils/supabase/server';
 
 export async function GET() {
 	try {

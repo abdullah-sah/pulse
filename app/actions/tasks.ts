@@ -1,7 +1,8 @@
 import { Tables } from '@/types/database.types';
 import { MotionTask, MotionProject } from '@/types/motion.types';
-import { MOTION_BASE_URL, getUserMotionApiKey } from '@/utils';
-import { createClient } from '@/utils/supabase/server';
+import { MOTION_BASE_URL } from '@/lib/constants';
+import { getUserMotionApiKey } from '@/lib/utils';
+import { createClient } from '@/lib/utils/supabase/server';
 
 export const fetchProjects = async (): Promise<{
 	projects: MotionProject[];

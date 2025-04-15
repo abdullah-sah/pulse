@@ -1,7 +1,10 @@
 // Re-export all utility functions from a central location
 
+// Dev utilities
+export { cn } from './utils';
+
 // Text utilities
-export { cn, truncateText, cleanAndTruncateHtml } from './text';
+export { truncateText, cleanAndTruncateHtml } from './text';
 
 // Navigation utilities
 export { encodedRedirect } from './navigation';
@@ -21,5 +24,3 @@ export {
 	updateUserMotionApiKey,
 } from './supabase/user-profile';
 
-// Constant exports
-export { MOTION_BASE_URL, GOOGLE_AUTH_SCOPES } from './constants';

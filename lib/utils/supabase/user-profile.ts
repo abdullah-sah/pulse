@@ -1,6 +1,6 @@
 import { Database } from '@/types/database.types';
-import { createClient as createServerClient } from '@/utils/supabase/server';
-import { createClient as createClientClient } from '@/utils/supabase/client';
+import { createClient as createServerClient } from '@/lib/utils/supabase/server';
+import { createClient as createClientClient } from '@/lib/utils/supabase/client';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 /**

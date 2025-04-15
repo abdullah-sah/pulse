@@ -1,4 +1,4 @@
-import { MOTION_BASE_URL } from '../constants';
+import { MOTION_BASE_URL } from '@/lib/constants';
 
 /**
  * Validates a Motion API key by making a test request to the Motion API

@@ -1,5 +1,5 @@
-import { createClient } from '@/utils/supabase/server';
-import { ensureUserProfileExists } from '@/utils';
+import { createClient } from '@/lib/utils/supabase/server';
+import { ensureUserProfileExists } from '@/lib/utils/supabase/user-profile';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {

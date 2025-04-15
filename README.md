@@ -15,11 +15,10 @@
 
 ## Features
 
-- [ ] Fetches AI-prioritised tasks from [Motion](https://www.usemotion.com) and caches them in Supabase
+- [x] Fetches AI-prioritised tasks from [Motion](https://www.usemotion.com) and caches them in Supabase
 - [x] Uses Google's Gemini AI to:
   - Generate concise summaries of emails from Gmail
   - Prioritise tasks based on urgency and deadlines
-  - Summarise meeting transcripts from Google Meet & Zoom
 - [ ] Sends daily task/email summaries to Slack, Telegram, or Discord
 - [ ] Customisable delivery times and priority filtering for daily summaries
 - Built with:
@@ -61,12 +60,12 @@
 
 ## Project Structure
 
-The project is organized into logical directories with a focus on maintainability and scalability:
+The project is organised into logical directories with a focus on maintainability and scalability:
 
 ### Core Directories
 
 - `/app`: Next.js app router files and API routes
-- `/components`: UI components organized by type
+- `/components`: UI components organised by type
 - `/contexts`: React contexts for state management
 - `/hooks`: Custom React hooks
 - `/lib`: Legacy utility code (pending migration)
