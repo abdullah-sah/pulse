@@ -1,10 +1,9 @@
 'use server';
 
-import { encodedRedirect } from '@/utils/utils';
-import { createClient } from '@/utils/supabase/server';
+import { encodedRedirect, ensureUserProfileExists } from '@/lib/utils';
+import { createClient } from '@/lib/utils/supabase/server';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const signUpAction = async (formData: FormData) => {
 	const email = formData.get('email')?.toString();
@@ -20,7 +19,7 @@ export const signUpAction = async (formData: FormData) => {
 		);
 	}
 
-	const { error } = await supabase.auth.signUp({
+	const { data: authData, error: signUpError } = await supabase.auth.signUp({
 		email,
 		password,
 		options: {
@@ -28,16 +27,29 @@ export const signUpAction = async (formData: FormData) => {
 		},
 	});
 
-	if (error) {
-		console.error(error.code + ' ' + error.message);
-		return encodedRedirect('error', '/sign-up', error.message);
-	} else {
-		return encodedRedirect(
-			'success',
-			'/sign-up',
-			'Thanks for signing up! Please check your email for a verification link.'
-		);
+	if (signUpError) {
+		console.error(signUpError.code + ' ' + signUpError.message);
+		return encodedRedirect('error', '/sign-up', signUpError.message);
 	}
+
+	if (authData.user) {
+		const success = await ensureUserProfileExists(supabase, authData.user.id);
+
+		if (!success) {
+			console.error('Failed to create user profile');
+			return encodedRedirect(
+				'error',
+				'/sign-up',
+				'Failed to create user profile'
+			);
+		}
+	}
+
+	return encodedRedirect(
+		'success',
+		'/sign-up',
+		'Thanks for signing up! Please check your email for a verification link.'
+	);
 };
 
 export const signInAction = async (formData: FormData) => {
@@ -45,13 +57,18 @@ export const signInAction = async (formData: FormData) => {
 	const password = formData.get('password') as string;
 	const supabase = await createClient();
 
-	const { error } = await supabase.auth.signInWithPassword({
+	const { data, error } = await supabase.auth.signInWithPassword({
 		email,
 		password,
 	});
 
 	if (error) {
 		return encodedRedirect('error', '/sign-in', error.message);
+	}
+
+	// Ensure user profile exists
+	if (data.user) {
+		await ensureUserProfileExists(supabase, data.user.id);
 	}
 
 	return redirect('/app');
@@ -106,11 +123,7 @@ export const resetPasswordAction = async (formData: FormData) => {
 	}
 
 	if (password !== confirmPassword) {
-		encodedRedirect(
-			'error',
-			'/app/reset-password',
-			'Passwords do not match'
-		);
+		encodedRedirect('error', '/app/reset-password', 'Passwords do not match');
 	}
 
 	const { error } = await supabase.auth.updateUser({
@@ -118,11 +131,7 @@ export const resetPasswordAction = async (formData: FormData) => {
 	});
 
 	if (error) {
-		encodedRedirect(
-			'error',
-			'/app/reset-password',
-			'Password update failed'
-		);
+		encodedRedirect('error', '/app/reset-password', 'Password update failed');
 	}
 
 	encodedRedirect('success', '/app/reset-password', 'Password updated');

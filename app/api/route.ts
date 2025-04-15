@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/utils/supabase/server';
 
 // Handle POST requests to log pulse events
 export async function POST(req: Request) {

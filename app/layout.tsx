@@ -2,6 +2,7 @@ import { Geist } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/header';
 import Providers from '@/providers';
+import { Toaster } from '@/components/ui/toaster';
 
 const defaultUrl = process.env.VERCEL_URL
 	? `https://${process.env.VERCEL_URL}`
@@ -31,6 +32,7 @@ export default function RootLayout({
 					<main className='flex flex-1 flex-col gap-10 w-full'>
 						<Header />
 						{children}
+						<Toaster />
 					</main>
 				</Providers>
 			</body>

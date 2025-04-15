@@ -20,7 +20,7 @@
   - Generate concise summaries of emails from Gmail
   - (Planned) Prioritise tasks based on urgency and deadlines
   - (Planned) Summarise meeting transcripts from Google Meet & Zoom
-- [x] Wake-up trigger via iOS Shortcuts to initiate daily cache and summary generation
+- [ ] Wake-up trigger via iOS Shortcuts to initiate daily cache and summary generation
 - [ ] Sends daily task/email summaries to Slack, Telegram, or Discord
 - [ ] Customisable delivery times and priority filtering for daily summaries
 - [ ] AI dashboard with widgets and personal insights (in progress)
@@ -60,6 +60,63 @@
    npm run dev
    ```
 
+## Project Structure
+
+The project is organised into logical directories with a focus on maintainability and scalability:
+
+### Core Directories
+
+- `/app`: Next.js app router files and API routes
+- `/components`: UI components organised by type
+- `/contexts`: React contexts for state management
+- `/hooks`: Custom React hooks
+- `/lib`: Legacy utility code (pending migration)
+- `/public`: Static assets
+- `/supabase`: Supabase configuration and migrations
+- `/types`: TypeScript type definitions
+- `/utils`: Utility functions (reorganized)
+
+### Utilities Organization
+
+All utility functions are exported from a central location for easier imports:
+
+```typescript
+// Example usage
+import { cn, truncateText, validateMotionApiKey } from '@/utils';
+```
+
+#### Categorized Utilities
+
+- **Text Utilities** (`/utils/text.ts`): 
+  - `cn()`: Class name merging for Tailwind
+  - `truncateText()`, `cleanAndTruncateHtml()`
+
+- **Navigation Utilities** (`/utils/navigation.ts`):
+  - `encodedRedirect()`: Handle redirects with encoded messages
+
+- **API Utilities** (`/utils/api/`):
+  - Motion API integration
+  - Tasks and email data fetching
+
+- **Supabase Utilities** (`/utils/supabase/`):
+  - Server/client Supabase clients
+  - User profile management
+
+### Components Organization
+
+- `/components/ui/`: Shadcn UI components
+- `/components/sections/`: Page section components
+- `/components/svg/`: SVG components
+- `/components/typography/`: Typography components
+
+## Environment Variables
+
+- `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase project anonymous key
+- `GOOGLE_GEMINI_API_KEY`: API key for Google's Gemini AI model
+- `MOTION_API_KEY`: API key for fetching AI-prioritised tasks from Motion
+- `SLACK_WEBHOOK_URL`: Webhook URL for sending summaries to Slack
+- `TELEGRAM_BOT_TOKEN`: Bot token for sending summaries to Telegram
 
 ## Environment Variables
 - NEXT_PUBLIC_SUPABASE_URL: Your Supabase project URL

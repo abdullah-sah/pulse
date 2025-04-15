@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/utils/supabase/server';
 import { google } from 'googleapis';
 import type { GeminiResponse } from '@/types/gemini.types';
 
@@ -126,7 +126,7 @@ export const getUnreadEmailSummaries = async () => {
 		const prompt =
 			`Here is a list of unread emails:\n\n${emailList}\n` +
 			`Analyze these emails and provide a JSON array of objects. Each object should have a "summary" property with a brief summary of the email's content, and a "priority" property with a number from 1-5 indicating importance (1 being highest priority). Marketing emails should be given a priority of 4 or 5 depending on the content.\n\n` +
-			`Return only the JSON array with no formatting characters, quotes, or additional text. For example:\n` +
+			`IMPORTANT: Return ONLY the JSON array with no additional text, formatting, or explanation. The response must be valid JSON that can be parsed directly. For example:\n` +
 			`[{"summary":"Meeting request from CEO","priority":1},{"summary":"Newsletter subscription","priority":4}]`;
 
 		const response = await fetch(`${API_URL}?key=${API_KEY}`, {
@@ -144,6 +144,12 @@ export const getUnreadEmailSummaries = async () => {
 						],
 					},
 				],
+				generationConfig: {
+					temperature: 0.1,
+					topP: 0.8,
+					topK: 40,
+					maxOutputTokens: 1024,
+				},
 			}),
 		});
 
@@ -152,8 +158,15 @@ export const getUnreadEmailSummaries = async () => {
 		}
 
 		const data: GeminiResponse = await response.json();
+		const responseText = data.candidates[0].content.parts[0].text;
 
-		const parsedData = JSON.parse(data.candidates[0].content.parts[0].text);
+		// Try to extract JSON from the response if it's wrapped in other text
+		const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+		if (!jsonMatch) {
+			throw new Error('No valid JSON array found in the response');
+		}
+
+		const parsedData = JSON.parse(jsonMatch[0]);
 		return parsedData.sort(
 			(a: { priority: number }, b: { priority: number }) =>
 				a.priority - b.priority

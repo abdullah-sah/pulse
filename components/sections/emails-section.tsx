@@ -1,7 +1,7 @@
 'use client';
 
 import SectionCard from '@/components/section-card';
-import { fetchUnreadEmailSummaries } from '@/utils/api';
+import { fetchUnreadEmailSummaries } from '@/lib/utils/api';
 import LineItem from '@/components/line-item';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';

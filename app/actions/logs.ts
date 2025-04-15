@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/lib/utils/supabase/server';
 
 export const fetchPulseLogs = async () => {
 	const supabase = await createClient();
