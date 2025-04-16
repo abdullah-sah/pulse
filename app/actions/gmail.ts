@@ -2,6 +2,10 @@ import { createClient } from '@/lib/utils/supabase/server';
 import { google } from 'googleapis';
 import type { GeminiResponse } from '@/types/gemini.types';
 
+import { generateObject } from 'ai';
+import { google as geminiAi } from '@ai-sdk/google';
+import { z } from 'zod';
+
 export const getUnreadGmailMessages = async (limit?: number) => {
 	const supabase = await createClient();
 	if (limit && limit > 100) {
@@ -104,14 +108,9 @@ export const getUnreadGmailMessages = async (limit?: number) => {
 };
 
 export const getUnreadEmailSummaries = async () => {
-	const API_KEY = process.env.GOOGLE_GEMINI_API_KEY;
-	const API_URL =
-		'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
-
 	try {
 		// Get unread messages first
 		const unreadMessages = await getUnreadGmailMessages();
-
 		// Create a formatted list of emails for the prompt
 		const emailList = unreadMessages
 			.map(
@@ -125,49 +124,24 @@ export const getUnreadEmailSummaries = async () => {
 
 		const prompt =
 			`Here is a list of unread emails:\n\n${emailList}\n` +
-			`Analyze these emails and provide a JSON array of objects. Each object should have a "summary" property with a brief summary of the email's content, and a "priority" property with a number from 1-5 indicating importance (1 being highest priority). Marketing emails should be given a priority of 4 or 5 depending on the content.\n\n` +
-			`IMPORTANT: Return ONLY the JSON array with no additional text, formatting, or explanation. The response must be valid JSON that can be parsed directly. For example:\n` +
-			`[{"summary":"Meeting request from CEO","priority":1},{"summary":"Newsletter subscription","priority":4}]`;
+			`Analyze these emails and provide a JSON array of objects. Each object should have a "summary" property with a brief summary of the email's content, and a "priority" property with a number from 1-5 indicating importance (1 being highest priority). Marketing emails should be given a priority of 4 or 5 depending on the content.\n\n`;
 
-		const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				contents: [
-					{
-						parts: [
-							{
-								text: prompt,
-							},
-						],
-					},
-				],
-				generationConfig: {
-					temperature: 0.1,
-					topP: 0.8,
-					topK: 40,
-					maxOutputTokens: 1024,
-				},
+		const result = await generateObject({
+			model: geminiAi('gemini-1.5-pro', {
+				useSearchGrounding: true,
 			}),
+			schema: z.object({
+				emails: z.array(
+					z.object({
+						summary: z.string(),
+						priority: z.number(),
+					})
+				),
+			}),
+			prompt,
 		});
 
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-
-		const data: GeminiResponse = await response.json();
-		const responseText = data.candidates[0].content.parts[0].text;
-
-		// Try to extract JSON from the response if it's wrapped in other text
-		const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-		if (!jsonMatch) {
-			throw new Error('No valid JSON array found in the response');
-		}
-
-		const parsedData = JSON.parse(jsonMatch[0]);
-		return parsedData.sort(
+		return result.object.emails.sort(
 			(a: { priority: number }, b: { priority: number }) =>
 				a.priority - b.priority
 		);
